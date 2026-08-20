@@ -78,6 +78,12 @@ origin	git@github.com:user/app-mvc.git (push)
 git push azure main
 ```
 
+- git verbose
+
+```sh
+GIT_SSH_COMMAND="ssh -vvv" git push azure main
+```
+
 - check ou [use ssh keys to authenticate](https://learn.microsoft.com/en-us/azure/devops/repos/git/use-ssh-keys-to-authenticate?view=azure-devops)
 
 ## references
