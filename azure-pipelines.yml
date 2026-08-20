@@ -12,11 +12,6 @@ variables:
   outputDir: '$(build.artifactStagingDirectory)'
   defaultDir: '$(System.DefaultWorkingDirectory)'
 
-parameters:
-- name: serviceConnectionName
-  type: string
-  default: '$(azsubscriptionapp)'
-
 stages:
   # build dotnet app mvc
   - stage: Build
@@ -87,7 +82,7 @@ stages:
             displayName: 'Deploy in Azure App Service'
             inputs:
               ConnectionType: 'AzureRM'
-              azureSubscription: '${{ parameters.serviceConnectionName }}'
+              azureSubscription: 'azsubscription'
               appType: 'webApp'
               WebAppName: 'dotnet-core-app'
               deployToSlotOrASE: true
