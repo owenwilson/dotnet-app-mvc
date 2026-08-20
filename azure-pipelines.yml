@@ -58,7 +58,7 @@ stages:
               ArtifactName: 'drop'
               # publishLocation: 'Container'
 
-          # notificaion successfully!
+          # notification successfully!
           - script: echo Build completed successfully!!!
             displayName: 'Notification, Build Status'
 
@@ -84,7 +84,7 @@ stages:
               ConnectionType: 'AzureRM'
               azureSubscription: '$(az-subscription)'
               appType: 'webApp'
-              WebAppName: 'azureDevOpsCourse'
+              WebAppName: 'dotnet-core-app'
               packageForLinux: '$(defaultDir)/**/*.zip'
 
           - script: echo Deployment to Azure App Service completed!
