@@ -92,6 +92,12 @@ git push azure main
 GIT_SSH_COMMAND="ssh -vvv" git push azure main
 ```
 
+- git pull azure
+
+```sh
+git pull azure main
+```
+
 - check ou [use ssh keys to authenticate](https://learn.microsoft.com/en-us/azure/devops/repos/git/use-ssh-keys-to-authenticate?view=azure-devops)
 
 ## references
