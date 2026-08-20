@@ -43,6 +43,16 @@ origin	git@github.com:user/app-mvc.git (fetch)
 origin	git@github.com:user/app-mvc.git (push)
 ```
 
+- add example configuration ssh alias
+
+```sh
+# azure devops ssh
+Host ssh.dev.azure.com
+    HostName ssh.dev.azure.com
+    IdentityFile ~/.ssh/key_azure
+    IdentitiesOnly yes
+```
+
 - add azure repos example
 
 ```sh
@@ -63,6 +73,8 @@ origin	git@github.com:user/app-mvc.git (push)
 ```sh
 git push azure main
 ```
+
+- check ou [use ssh keys to authenticate](https://learn.microsoft.com/en-us/azure/devops/repos/git/use-ssh-keys-to-authenticate?view=azure-devops)
 
 ## references
 
