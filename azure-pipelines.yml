@@ -1,34 +1,91 @@
-# ASP.NET Core (.NET Framework)
-# Build and test ASP.NET Core projects targeting the full .NET Framework.
-# Add steps that publish symbols, save build artifacts, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
-
 trigger:
 - main
 
 pool:
-  vmImage: 'windows-latest'
+  # vmImage: 'windows-latest'
+  name: 'localDesktopMachine'
 
 variables:
-  solution: '**/*.sln'
+  solution: 'dotnet-app-mvc.csproj'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
+  outputDir: '$(build.artifactStagingDirectory)'
+  defaultDir: '$(System.DefaultWorkingDirectory)'
 
-steps:
-- task: NuGetToolInstaller@1
+stages:
+  # build dotnet app mvc
+  - stage: Build
+    displayName: Build Stage
+    jobs:
+      - job: BuildNetCoreApp
+        displayName: Build .Net Core app
+        steps:
 
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '$(solution)'
+          # install dotnet v8
+          - task: UseDotNet@2
+            displayName: 'Install .net core v8'
+            inputs:
+              packageType: 'sdk'
+              version: '8.0.424'
 
-- task: VSBuild@1
-  inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+          # dotnet restore
+          - task: DotNetCoreCLI@2
+            displayName: 'Restore Dependencies'
+            inputs:
+              command: 'restore'
+              projects: '$(solution)'
 
-- task: VSTest@2
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+          # dotnet build
+          - task: DotNetCoreCLI@2
+            displayName: 'Build Proyect'
+            inputs:
+              command: 'build'
+              projects: '$(solution)'
+
+          # dotnet publish
+          - task: DotNetCoreCLI@2
+            displayName: 'Create dotnet-app-core.zip'
+            inputs:
+              command: 'publish'
+              publishWebProjects: true
+              arguments: '--configuration $(buildConfiguration) --output $(outputDir)'
+
+          # publish build artifact
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish dotnet-app-core.zip'
+            inputs:
+              PathtoPublish: '$(outputDir)'
+              ArtifactName: 'drop'
+              # publishLocation: 'Container'
+
+          # notificaion successfully!
+          - script: echo Build completed successfully!!!
+            displayName: 'Notification, Build Status'
+
+  - stage: Deploy
+    displayName: Deploy Stage
+    dependsOn: Build
+    condition: succeeded()
+    jobs:
+      - job: DeployJob
+        displayName: 'Deploy to Azure App Service'
+        steps:
+          - task: DownloadBuildArtifacts@1
+            displayName: 'Download Artifact (dotnet-app-core.zip) from drop folder'
+            inputs:
+              buildType: 'current'
+              downloadType: 'single'
+              artifactName: 'drop'
+              downloadPath: '$(defaultDir)'
+
+          - task: AzureRmWebAppDeployment@5
+            displayName: 'Deploy in Azure App Service'
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: '$(az-subscription)'
+              appType: 'webApp'
+              WebAppName: 'azureDevOpsCourse'
+              packageForLinux: '$(defaultDir)/**/*.zip'
+
+          - script: echo Deployment to Azure App Service completed!
+            displayName: 'Notification, Deployment Status'
