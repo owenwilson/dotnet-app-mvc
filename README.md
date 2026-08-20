@@ -14,6 +14,14 @@ dotnet new globaljson --sdk-version 8.0.424
 dotnet new mvc
 ```
 
+## run proyect
+
+```sh
+dotnet run
+```
+
+- open browser [localhost:5110](http://localhost:5110)
+
 ## ci-cd
 
 ```sh
