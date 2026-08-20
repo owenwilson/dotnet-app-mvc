@@ -61,7 +61,11 @@ git remote add azure git@ssh.dev.azure.com:v3/user/app-mvc/app-mvc
 
 ```sh
 git remote -v
+```
 
+- output
+
+```sh
 azure	git@ssh.dev.azure.com:v3/user/app-mvc/app-mvc (fetch)
 azure	git@ssh.dev.azure.com:v3/user/app-mvc/app-mvc (push)
 origin	git@github.com:user/app-mvc.git (fetch)
