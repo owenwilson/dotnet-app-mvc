@@ -11,6 +11,10 @@ variables:
   buildConfiguration: 'Release'
   outputDir: '$(build.artifactStagingDirectory)'
   defaultDir: '$(System.DefaultWorkingDirectory)'
+  sonarOrganization: 'az-devops-team'
+  sonarProjectKey: 'az-devops-team_dotnet-app-mvc'
+  sonarProjectName: 'dotnet-app-mvc'
+
 
 stages:
   # build dotnet app mvc
@@ -28,6 +32,16 @@ stages:
               packageType: 'sdk'
               version: '8.0.424'
 
+          # sonarcloud
+          - task: SonarCloudPrepare@4
+            displayName: 'Prepare analysis Configuration on SonarCloud'
+            inputs:
+              SonarCloud: 'az-sonarcloud'
+              organization: '$(sonarOrganization)'
+              scannerMode: 'dotnet'
+              projectName: '$(sonarProjectName)'
+              projectKey: '$(sonarProjectKey)'
+
           # dotnet restore
           - task: DotNetCoreCLI@2
             displayName: 'Restore Dependencies'
@@ -41,6 +55,18 @@ stages:
             inputs:
               command: 'build'
               projects: '$(solution)'
+
+          # sonarcloud run analysis
+          - task: SonarCloudAnalyze@4
+            displayName: 'Run code analysis on SonarCloud'
+            inputs:
+              jdkversion: 'JAVA_HOME_17_X64'
+
+          # sonarcloud publish
+          - task: SonarCloudPublish@4
+            displayName: 'Publish quality gate result on SonarCloud'
+            inputs:
+              pollingTimeoutSec: '300'
 
           # dotnet publish
           - task: DotNetCoreCLI@2
